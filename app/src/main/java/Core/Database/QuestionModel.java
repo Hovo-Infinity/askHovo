@@ -1,9 +1,18 @@
-package Core;
+package Core.Database;
+
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
 
+import Core.Constants;
+
+@Entity(tableName = Constants.DB_NAME)
 public class QuestionModel {
+
+    @PrimaryKey(autoGenerate = true)
     private int id;
+
     private String  question;
     private String title;
     private Date date;

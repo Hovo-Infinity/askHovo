@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import Core.QuestionModel;
+import Core.Database.QuestionModel;
 
 public class QuestionItem extends RecyclerView.Adapter<QuestionItem.ViewHolder> {
 
