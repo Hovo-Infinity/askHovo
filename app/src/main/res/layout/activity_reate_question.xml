@@ -6,41 +6,44 @@
     android:layout_height="match_parent">
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/materialEditText"
+        android:id="@+id/mte_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginStart="@dimen/margin_small"
-        android:hint="Quastion"
+        android:hint="Question"
         android:padding="@dimen/margin_small"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:met_errorColor="@color/error"
         app:met_floatingLabel="highlight"
         app:met_singleLineEllipsis="true"
         tools:layout_editor_absoluteX="8dp" />
 
     <com.rengwuxian.materialedittext.MaterialMultiAutoCompleteTextView
-        android:id="@+id/materialMultiAutoCompleteTextView"
+        android:id="@+id/mtw_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginStart="@dimen/margin_small"
         android:hint="Description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/materialEditText"
+        app:layout_constraintTop_toBottomOf="@id/mte_question"
+        app:met_errorColor="@color/error"
         app:met_floatingLabel="highlight"
         tools:layout_editor_absoluteX="8dp" />
 
     <android.support.v7.widget.AppCompatButton
+        android:id="@+id/b_save_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
         android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginStart="@dimen/margin_small"
+        android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
