@@ -4,7 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="error">#ff0000</color>
-    <color name="item_background">#33ffffff</color>
+    <color name="item_background_normal">#33ffffff</color>
+    <color name="item_background_pressed">#a1ffffff</color>
     <color name="white">#ffffff</color>
     <color name="white50">#80ffffff</color>
+    <color name="white60">#99ffffff</color>
+    <color name="white70">#B3ffffff</color>
 </resources>

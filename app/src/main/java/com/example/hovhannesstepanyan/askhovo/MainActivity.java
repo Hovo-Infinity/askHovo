@@ -1,5 +1,6 @@
 package com.example.hovhannesstepanyan.askhovo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -27,6 +29,7 @@ import Core.DataManager;
 import Core.Database.QuestonDatabase;
 import Core.GlideApp;
 import Core.MGPrefsCacheManager;
+import Core.OnSwipeTouchListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private QuestionItem mItem;
     private ImageView mBackgroundImageView;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,17 @@ public class MainActivity extends AppCompatActivity {
                     .load("https://www.wallpaperwolf.com/wallpapers/iphone-wallpapers/hd/download/night-stars-0467.png")
                     .into(mBackgroundImageView);
         }
+
+        mRecyclerView.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+
+            public void onSwipeRight() {
+                Log.e(TAG, "onSwipeRight");
+            }
+
+            public void onSwipeLeft() {
+                Log.e(TAG, "onSwipeLeft");
+            }
+        });
     }
 
     @Override
