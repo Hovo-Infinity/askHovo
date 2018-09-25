@@ -3,6 +3,7 @@ package Core;
 public interface Constants {
     String DB_NAME = "question_table";
     String QUESTION = "question";
+    String QUESTION_ID = "question_id";
     String DESCRIPTION = "description";
     String QUESTION_MODEL = "question_model";
     int RESULT_LOAD_IMAGE = 1000;

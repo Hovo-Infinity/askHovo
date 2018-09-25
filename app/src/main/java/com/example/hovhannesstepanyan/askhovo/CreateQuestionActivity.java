@@ -17,6 +17,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.MaterialMultiAutoCompleteTextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import Core.Constants;
@@ -33,6 +34,7 @@ public class CreateQuestionActivity extends AppCompatActivity {
     private MaterialMultiAutoCompleteTextView mDescriptionView;
     private MaterialEditText mQuestionView;
     private QuestionModel mQuestion;
+    private Calendar mSelectCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +77,20 @@ public class CreateQuestionActivity extends AppCompatActivity {
                     */
                         QuestionModel questionModel = new QuestionModel(descr, question, SimpleDateFormat.getInstance().format(new Date()), false);
                         QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().insertQuestion(questionModel);
+                        if (mSelectCalendar != null) {
+                            QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, questionModel, mSelectCalendar);
+                            Date selectDate = mSelectCalendar.getTime();
+                            questionModel.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                            QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(questionModel);
+                        }
                     } else {
                         mQuestion.setQuestion(descr);
                         mQuestion.setTitle(question);
+                        if (mSelectCalendar != null) {
+                            QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, mQuestion, mSelectCalendar);
+                            Date selectDate = mSelectCalendar.getTime();
+                            mQuestion.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                        }
                         QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(mQuestion);
                     }
                     finish();
@@ -99,7 +112,10 @@ public class CreateQuestionActivity extends AppCompatActivity {
 
         if (id == R.id.action_set_notification) {
 //            new DateTimePicker().show(getSupportFragmentManager(), TAG);
-            QuestionNotification.setReminder(this, NotificationReceiver.class, mQuestion, 2018, 9, 23, 14, 47);
+//            QuestionNotification.setReminder(this, NotificationReceiver.class, mQuestion, 2018, 9, 23, 14, 47);
+            new DateTimePicker()
+                    .setListener((view, calendar) -> mSelectCalendar = calendar)
+                    .show(getSupportFragmentManager(), TAG);
             return true;
         }
 

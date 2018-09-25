@@ -26,7 +26,7 @@ public class QuestionNotification {
 
     private static final int DAILY_REMINDER_REQUEST_CODE = 1000;
 
-    public static void showNotification(Context context, Class<?> cls, String title,String content) {
+    public static void showNotification(Context context, Class<?> cls, String title, String content) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         Intent notificationIntent = new Intent(context, cls);
@@ -44,7 +44,7 @@ public class QuestionNotification {
                     .setContentText(content)
                     .setAutoCancel(true)
                     .setSound(alarmSound)
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setSmallIcon(R.mipmap.ic_stat_panda)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher_app))
                     .setContentIntent(pendingIntent).build();
 
@@ -74,16 +74,7 @@ public class QuestionNotification {
         pendingIntent.cancel();
     }
 
-    public static void setReminder(Context context, Class<?> cls, final QuestionModel model, int year, int month, int day, int hour, int minute) {
-
-        Calendar setCalendar = Calendar.getInstance();
-        setCalendar.set(Calendar.YEAR, year);
-        setCalendar.set(Calendar.MONTH, month);
-        setCalendar.set(Calendar.DAY_OF_MONTH, day);
-        setCalendar.set(Calendar.HOUR_OF_DAY, hour);
-        setCalendar.set(Calendar.MINUTE, minute);
-        setCalendar.set(Calendar.SECOND, 0);
-
+    public static void setReminder(Context context, Class<?> cls, final QuestionModel model, Calendar setCalendar) {
         cancelReminder(context,cls);
 
         // Enable a receiver
@@ -97,7 +88,8 @@ public class QuestionNotification {
 
 
         Intent intent = new Intent(context, cls);
-        intent.putExtra(Constants.QUESTION, model);
+//        intent.putExtra(Constants.QUESTION, model);
+        intent.putExtra(Constants.QUESTION_ID, model.getId());
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, DAILY_REMINDER_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -105,5 +97,18 @@ public class QuestionNotification {
         if (am != null) {
             am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
+    }
+
+    public static void setReminder(Context context, Class<?> cls, final QuestionModel model, int year, int month, int day, int hour, int minute) {
+
+        Calendar setCalendar = Calendar.getInstance();
+        setCalendar.set(Calendar.YEAR, year);
+        setCalendar.set(Calendar.MONTH, month);
+        setCalendar.set(Calendar.DAY_OF_MONTH, day);
+        setCalendar.set(Calendar.HOUR_OF_DAY, hour);
+        setCalendar.set(Calendar.MINUTE, minute);
+        setCalendar.set(Calendar.SECOND, 0);
+
+        setReminder(context, cls, model, setCalendar);
     }
 }

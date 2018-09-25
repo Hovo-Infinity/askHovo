@@ -10,6 +10,7 @@ import com.example.hovhannesstepanyan.askhovo.Notification.QuestionNotification;
 
 import Core.Constants;
 import Core.Database.QuestionModel;
+import Core.Database.QuestonDatabase;
 
 public class NotificationReceiver extends BroadcastReceiver {
     public static String NOTIFICATION_ID = "notification-id";
@@ -32,13 +33,15 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         Bundle bundle = intent.getExtras();
         assert bundle != null;
-        QuestionModel questin = bundle.getParcelable(Constants.QUESTION);
-        Log.e(TAG, questin.getQuestion());
+//        QuestionModel question = bundle.getParcelable(Constants.QUESTION);
+        int id = bundle.getInt(Constants.QUESTION_ID);
+        QuestionModel question = QuestonDatabase.getDataBase(context).pinDAO().selectQuestion(id);
         Log.e(TAG, "onReceive: ");
+        Log.e(TAG, question.getQuestion());
 
         //Trigger the notification
         QuestionNotification.showNotification(context, CreateQuestionActivity.class,
-                questin.getTitle(), questin.getQuestion());
+                question.getTitle(), question.getQuestion());
 
         /*
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
