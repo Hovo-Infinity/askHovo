@@ -2,4 +2,5 @@
     <string name="app_name">AskHovo</string>
     <string name="action_change_bg_image">Change Background</string>
     <string name="action_reset_bg_image">Reset Background</string>
+    <string name="action_random_bg_image">Random Background</string>
 </resources>

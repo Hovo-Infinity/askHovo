@@ -1,16 +1,19 @@
 package com.example.hovhannesstepanyan.askhovo;
 
-import android.app.DatePickerDialog;
 import android.app.Notification;
-import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.example.hovhannesstepanyan.askhovo.Notification.QuestionNotification;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -23,7 +26,6 @@ import java.util.Date;
 import Core.Constants;
 import Core.Database.QuestionModel;
 import Core.Database.QuestonDatabase;
-import Core.Pickers.DatePickerFragment;
 import Core.Pickers.DateTimePicker;
 
 public class CreateQuestionActivity extends AppCompatActivity {
@@ -33,16 +35,15 @@ public class CreateQuestionActivity extends AppCompatActivity {
     private AppCompatButton mSaveButton;
     private MaterialMultiAutoCompleteTextView mDescriptionView;
     private MaterialEditText mQuestionView;
+    private TextView mDateTextView;
+    private Switch mSwitch;
     private QuestionModel mQuestion;
     private Calendar mSelectCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reate_question);
-        mSaveButton = findViewById(R.id.b_save_question);
-        mDescriptionView = findViewById(R.id.mtw_description);
-        mQuestionView = findViewById(R.id.mte_question);
+        bindViews();
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -50,9 +51,9 @@ public class CreateQuestionActivity extends AppCompatActivity {
             mQuestion = bundle.getParcelable(Constants.QUESTION_MODEL);
             if (mQuestion != null) {
                 mQuestionView.setText(mQuestion.getTitle());
-            }
-            if (mQuestion != null) {
                 mDescriptionView.setText(mQuestion.getQuestion());
+                mDateTextView.setText(mQuestion.getDate());
+                mSwitch.setChecked(mQuestion.getNotificationEnabled());
             }
         }
 
@@ -75,29 +76,86 @@ public class CreateQuestionActivity extends AppCompatActivity {
                     resIntent.putExtra(Constants.DESCRIPTION, descr);
                     setResult(RESULT_OK, resIntent);
                     */
-                        QuestionModel questionModel = new QuestionModel(descr, question, SimpleDateFormat.getInstance().format(new Date()), false);
+                        QuestionModel questionModel = new QuestionModel(descr, question, SimpleDateFormat.getInstance().format(new Date()), false, mSwitch.isChecked());
                         QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().insertQuestion(questionModel);
-                        if (mSelectCalendar != null) {
-                            QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, questionModel, mSelectCalendar);
-                            Date selectDate = mSelectCalendar.getTime();
-                            questionModel.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                        if (mSelectCalendar != null && mSwitch.isChecked()) {
+                            Calendar now = Calendar.getInstance();
+                            if (mSelectCalendar.before(now)) {
+                                createAlertDialog(((dialog, which) -> {
+                                    QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, questionModel, mSelectCalendar);
+                                    Date selectDate = mSelectCalendar.getTime();
+                                    questionModel.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                                    QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(questionModel);
+                                    finish();
+                                }));
+                            } else {
+                                QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, questionModel, mSelectCalendar);
+                                Date selectDate = mSelectCalendar.getTime();
+                                questionModel.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                                QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(questionModel);
+                                finish();
+                            }
+                        } else {
                             QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(questionModel);
+                            finish();
                         }
                     } else {
                         mQuestion.setQuestion(descr);
                         mQuestion.setTitle(question);
-                        if (mSelectCalendar != null) {
-                            QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, mQuestion, mSelectCalendar);
-                            Date selectDate = mSelectCalendar.getTime();
-                            mQuestion.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                        mQuestion.setNotificationEnabled(mSwitch.isChecked());
+                        if (mSelectCalendar != null && mSwitch.isChecked()) {
+                            Calendar now = Calendar.getInstance();
+                            if (mSelectCalendar.before(now)) {
+                                createAlertDialog((dialog, which) -> {
+                                    mSelectCalendar.set(Calendar.DAY_OF_MONTH, mSelectCalendar.get(Calendar.DAY_OF_MONTH) + 1);
+                                    QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, mQuestion, mSelectCalendar);
+                                    Date selectDate = mSelectCalendar.getTime();
+                                    mQuestion.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                                    QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(mQuestion);
+                                    finish();
+                                });
+                            } else {
+                                QuestionNotification.setReminder(CreateQuestionActivity.this, NotificationReceiver.class, mQuestion, mSelectCalendar);
+                                Date selectDate = mSelectCalendar.getTime();
+                                mQuestion.setDate(SimpleDateFormat.getInstance().format(selectDate));
+                                QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(mQuestion);
+                                finish();
+                            }
+                        } else {
+                            QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(mQuestion);
+                            finish();
                         }
-                        QuestonDatabase.getDataBase(getApplicationContext()).pinDAO().updateQuestion(mQuestion);
                     }
-                    finish();
                 }
             }
         });
 
+    }
+
+    private void createAlertDialog(DialogInterface.OnClickListener listener) {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(CreateQuestionActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(CreateQuestionActivity.this);
+        }
+        builder.setIcon(R.mipmap.ic_launcher_app)
+                .setMessage("Error e exe")
+                .setTitle("Errrrrrrrrorrrrrr")
+                .setPositiveButton("ok", listener)
+                .setNegativeButton("cancel", (dialog, which) -> {
+                })
+                .create()
+                .show();
+    }
+
+    private void bindViews() {
+        setContentView(R.layout.activity_create_question);
+        mSaveButton = findViewById(R.id.b_save_question);
+        mDescriptionView = findViewById(R.id.mtw_description);
+        mQuestionView = findViewById(R.id.mte_question);
+        mDateTextView = findViewById(R.id.tv_notification_date);
+        mSwitch = findViewById(R.id.switch_enable_notification);
     }
 
     @Override
@@ -114,7 +172,10 @@ public class CreateQuestionActivity extends AppCompatActivity {
 //            new DateTimePicker().show(getSupportFragmentManager(), TAG);
 //            QuestionNotification.setReminder(this, NotificationReceiver.class, mQuestion, 2018, 9, 23, 14, 47);
             new DateTimePicker()
-                    .setListener((view, calendar) -> mSelectCalendar = calendar)
+                    .setListener((view, calendar) -> {
+                        mSelectCalendar = calendar;
+                        mDateTextView.setText(SimpleDateFormat.getInstance().format(calendar.getTime()));
+                    })
                     .show(getSupportFragmentManager(), TAG);
             return true;
         }

@@ -10,4 +10,5 @@
     <color name="white50">#80ffffff</color>
     <color name="white60">#99ffffff</color>
     <color name="white70">#B3ffffff</color>
+    <color name="switch_enable">#99d066</color>
 </resources>

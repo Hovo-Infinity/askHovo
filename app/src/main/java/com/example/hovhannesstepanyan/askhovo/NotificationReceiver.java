@@ -40,8 +40,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Log.e(TAG, question.getQuestion());
 
         //Trigger the notification
-        QuestionNotification.showNotification(context, CreateQuestionActivity.class,
-                question.getTitle(), question.getQuestion());
+        QuestionNotification.showNotification(context, CreateQuestionActivity.class, question);
 
         /*
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

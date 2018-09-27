@@ -2,6 +2,7 @@ package Core;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class DataManager {
 
@@ -13,7 +14,8 @@ public class DataManager {
 
         if(dataManager == null){
             dataManager = new DataManager();
-            dataManager.imageUrls = Arrays.asList("https://i.pinimg.com/originals/24/45/fb/2445fbdbebc12e5ffe412790a3229873.jpg",
+            dataManager.imageUrls = Arrays.asList(
+                    "https://i.pinimg.com/originals/24/45/fb/2445fbdbebc12e5ffe412790a3229873.jpg",
                     "http://ezba.info/wp-content/uploads/2018/07/vintage-wallpapers-for-galaxy-lovely-kind-of-reminds-me-of-wel-e-to-night-vale-of-vintage-wallpapers-for-galaxy.jpg",
                     "https://www.wallpaperwolf.com/wallpapers/iphone-wallpapers/hd/download/night-stars-0467.png",
                     "https://spliffmobile.com/download/night-sky-7391.jpg",
@@ -38,6 +40,14 @@ public class DataManager {
 
     public void setSelectedIndex(int index) {
         imageUrl = imageUrls.get(index);
+    }
+
+    public void setRandomBackground() {
+        Random rand = new Random();
+        int max = imageUrls.size();
+        int min = 0;
+        int index = rand.nextInt((max - min)) + min;
+        setSelectedIndex(index);
     }
 
 }

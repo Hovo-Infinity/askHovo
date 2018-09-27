@@ -6,13 +6,17 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.example.hovhannesstepanyan.askhovo.AskApplication;
 import com.example.hovhannesstepanyan.askhovo.R;
@@ -25,8 +29,9 @@ import Core.Database.QuestionModel;
 public class QuestionNotification {
 
     private static final int DAILY_REMINDER_REQUEST_CODE = 1000;
+    public static final String TAG = "QuestionNotification";
 
-    public static void showNotification(Context context, Class<?> cls, String title, String content) {
+    public static void showNotification(Context context, Class<?> cls, QuestionModel question) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         Intent notificationIntent = new Intent(context, cls);
@@ -36,12 +41,12 @@ public class QuestionNotification {
         stackBuilder.addParentStack(cls);
         stackBuilder.addNextIntent(notificationIntent);
 
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(DAILY_REMINDER_REQUEST_CODE, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(DAILY_REMINDER_REQUEST_CODE, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AskApplication.CHANNEL_ID);
 
-        Notification notification = builder.setContentTitle(title)
-                    .setContentText(content)
+        Notification notification = builder.setContentTitle(question.getTitle())
+                    .setContentText(question.getQuestion())
                     .setAutoCancel(true)
                     .setSound(alarmSound)
                     .setSmallIcon(R.mipmap.ic_stat_panda)
@@ -50,12 +55,12 @@ public class QuestionNotification {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
-            notificationManager.notify(DAILY_REMINDER_REQUEST_CODE, notification);
+            notificationManager.notify(question.getId(), notification);
         }
 
     }
 
-    public static void cancelReminder(Context context,Class<?> cls) {
+    public static void cancelReminder(Context context, Class<?> cls) {
         // Disable a receiver
 
         ComponentName receiver = new ComponentName(context, cls);
@@ -75,6 +80,7 @@ public class QuestionNotification {
     }
 
     public static void setReminder(Context context, Class<?> cls, final QuestionModel model, Calendar setCalendar) {
+
         cancelReminder(context,cls);
 
         // Enable a receiver

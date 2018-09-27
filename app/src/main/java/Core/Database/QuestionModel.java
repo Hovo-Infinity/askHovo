@@ -29,11 +29,14 @@ public class QuestionModel implements Parcelable {
 
     private Boolean compleated;
 
-    public QuestionModel(String question, String title, String date, Boolean compleated) {
+    private Boolean notificationEnabled;
+
+    public QuestionModel(String question, @NonNull String title, @NonNull String date, Boolean compleated, Boolean notificationEnabled) {
         this.question = question;
         this.title = title;
         this.date = date;
         this.compleated = compleated;
+        this.notificationEnabled = notificationEnabled;
     }
 
     public int getId() {
@@ -97,6 +100,7 @@ public class QuestionModel implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.date);
         dest.writeValue(this.compleated);
+        dest.writeValue(this.notificationEnabled);
     }
 
     protected QuestionModel(Parcel in) {
@@ -105,6 +109,7 @@ public class QuestionModel implements Parcelable {
         this.title = in.readString();
         this.date = in.readString();
         this.compleated = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.notificationEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<QuestionModel> CREATOR = new Parcelable.Creator<QuestionModel>() {
@@ -118,4 +123,14 @@ public class QuestionModel implements Parcelable {
             return new QuestionModel[size];
         }
     };
+
+
+    public Boolean getNotificationEnabled() {
+        return notificationEnabled;
+    }
+
+    public void setNotificationEnabled(Boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
+    }
+
 }

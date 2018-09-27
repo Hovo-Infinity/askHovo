@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String url = MGPrefsCacheManager.getInstance().getStringFromCashe(Constants.BACKGROUND_IMAGE_URI, DataManager.getInstance().getSelecredImage());
         if (url != null) {
             GlideApp.with(this)
-                    .load("https://www.wallpaperwolf.com/wallpapers/iphone-wallpapers/hd/download/night-stars-0467.png")
+                    .load(url)
                     .into(mBackgroundImageView);
         }
 
@@ -138,16 +138,22 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_reset_bg) {
             DataManager dataManager = DataManager.getInstance();
-            int count = dataManager.getImageUrls().size();
-            dataManager.setSelectedIndex(new Random().nextInt(count));
             String selectedImage = dataManager.getSelecredImage();
             MGPrefsCacheManager.getInstance().putInCashe(Constants.BACKGROUND_IMAGE_URI, selectedImage);
-            GlideApp.with(this)
-                    .load("https://wallpapershome.com/images/pages/pic_v/547.jpg")
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(mBackgroundImageView);
+            setBackgroundImage();
+        }
+        if (id == R.id.action_random_bg) {
+            DataManager.getInstance().setRandomBackground();
+            setBackgroundImage();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setBackgroundImage() {
+        GlideApp.with(this)
+                .load(DataManager.getInstance().getSelecredImage())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(mBackgroundImageView);
     }
 }
